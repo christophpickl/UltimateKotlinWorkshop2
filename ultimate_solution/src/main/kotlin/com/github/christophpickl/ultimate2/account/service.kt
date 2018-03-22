@@ -7,10 +7,15 @@ class AccountService(
     private val repo: AccountRepository
 ) {
 
-    fun readAccounts() =
-        repo.findAll().map { it.toAccount() }
+    fun readAccounts(searchAlias: String?) =
+        (if (searchAlias != null) {
+            repo.findByAlias(searchAlias)
+        } else {
+            repo.findAll()
+        }).map { it.toAccount() }
 
-    fun readAccount(id: Long): Account? =
+
+    fun readAccount(id: Long) =
         repo.findById(id).let {
             if (it.isPresent) it.get().toAccount() else null
         }

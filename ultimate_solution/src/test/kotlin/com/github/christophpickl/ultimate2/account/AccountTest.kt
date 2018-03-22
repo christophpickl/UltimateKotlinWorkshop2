@@ -24,10 +24,11 @@ class AccountTest {
 
     private val accountsPath = "/accounts"
     private val accountsUri = URI.create(accountsPath)
+    private val anyAlias = "anyAlias"
     private val anyAccount = Account(0, "alias", 42)
 
     @Test
-    fun `READ - When GET accounts Then return 200 and empty list`() {
+    fun `GET accounts - Then return 200 and empty list`() {
         val response = rest.exchange<List<Account>>(
             RequestEntity.get(accountsUri).build())
 
@@ -36,7 +37,7 @@ class AccountTest {
     }
 
     @Test
-    fun `READ - Given an existing account When GET accounts Then return that account`() {
+    fun `GET accounts - Given an existing account Then return that account`() {
         val savedAccount = repo.save(anyAccount.toAccountJpa()).toAccount()
 
         val response = rest.exchange<List<Account>>(
@@ -45,7 +46,18 @@ class AccountTest {
     }
 
     @Test
-    fun `READ - Given an existing account When GET that account by its ID Then return that account`() {
+    fun `GET accounts by alias - Given an two accounts with different alias Then return only one account`() {
+        repo.save(anyAccount.copy(alias = "$anyAlias-not").toAccountJpa()).toAccount()
+        val savedAccount = repo.save(anyAccount.copy(alias = anyAlias).toAccountJpa()).toAccount()
+
+        val response = rest.exchange<List<Account>>(
+            RequestEntity.get(URI.create("$accountsPath/?alias=$anyAlias")).build())
+
+        assertThat(response.body).containsExactly(savedAccount)
+    }
+
+    @Test
+    fun `GET account - Given an existing account When GET that account by its ID Then return that account`() {
         val savedAccount = repo.save(anyAccount.toAccountJpa()).toAccount()
 
         val response = rest.exchange<Account>(
@@ -55,7 +67,7 @@ class AccountTest {
     }
 
     @Test
-    fun `CREATE - When POST an account Then return that account with new ID and persist it in the database`() {
+    fun `POST account - Then return that account with new ID and persist it in the database`() {
         val response = rest.exchange<Account>(
             RequestEntity.post(accountsUri).body(anyAccount))
 

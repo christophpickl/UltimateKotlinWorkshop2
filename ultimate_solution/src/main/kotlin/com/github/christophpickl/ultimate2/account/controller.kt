@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -15,12 +16,21 @@ class AccountController(
 ) {
 
     @GetMapping
-    fun getAccounts() = service.readAccounts()
+    fun getAccounts(
+        @RequestParam("alias", required = false)
+        searchAlias: String?
+    ) = service.readAccounts(searchAlias)
 
     @GetMapping(path = ["/{id}"])
-    fun getAccount(@PathVariable id: Long) = service.readAccount(id)
+    fun getAccount(
+        @PathVariable
+        id: Long
+    ) = service.readAccount(id)
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun postAccount(@RequestBody account: Account) = service.createAccount(account)
+    fun postAccount(
+        @RequestBody
+        account: Account
+    ) = service.createAccount(account)
 
 }
