@@ -17,8 +17,8 @@ class AccountController(
 
     @GetMapping
     fun getAccounts(
-        @RequestParam("alias", required = false)
-        searchAlias: String? = null
+        @RequestParam("alias")
+        searchAlias: String?
     ) = service.readAccounts(searchAlias)
 
     @GetMapping(path = ["/{id}"])

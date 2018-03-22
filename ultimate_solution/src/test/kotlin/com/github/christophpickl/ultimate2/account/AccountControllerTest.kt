@@ -16,10 +16,9 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
 import java.net.URI
 
-
 @RunWith(SpringRunner::class)
 @IntegrationTest
-class AccountControllerIntegrationTest {
+class AccountControllerTest {
 
     @Autowired
     private lateinit var rest: TestRestTemplate
@@ -88,6 +87,9 @@ class AccountControllerIntegrationTest {
             repo.save(letAccount(it).copy(id = 0).toAccountJpa()).toAccount()
         }
 
+    private inline fun <reified T : Any> TestRestTemplate.exchangeGet(url: String): T =
+        exchange<T>(RequestEntity.get(URI.create(url)).build()).body!!
+
     @TestConfiguration
     class TestConfig {
         @Bean
@@ -98,29 +100,9 @@ class AccountControllerIntegrationTest {
     }
 }
 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@ActiveProfiles("test")
 annotation class IntegrationTest
-
-fun Account.Companion.testInstance() = Account(
-    id = 42,
-    alias = "testAlias",
-    balance = 1337,
-    type = AccountType.CURRENT
-)
-
-
-fun AccountJpa.Companion.testInstance() = AccountJpa(
-    id = 43,
-    alias = "testAliaz",
-    balance = 1338,
-    type = AccountTypeJpa.SAVING
-)
-
-fun AccountJpa.Companion.unsavedTestInstance() = testInstance().copy(id = 0)
-
-inline fun <reified T : Any> TestRestTemplate.exchangeGet(url: String): T =
-    exchange<T>(RequestEntity.get(URI.create(url)).build()).body!!
