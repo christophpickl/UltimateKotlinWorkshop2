@@ -30,8 +30,6 @@ data class AccountJpa(
 )
 
 @Repository
-interface AccountRepository : JpaRepository<AccountJpa, Long>
-//interface AccountJpaRepository : CrudRepository<AccountJpa, Long> {
+interface AccountRepository : JpaRepository<AccountJpa, Long> {
 //    fun findByAlias(alias: String): Iterable<AccountJpa>
-//}
-
+}
