@@ -13,7 +13,9 @@ data class AccountJpa(
     val alias: String,
     val balance: Int,
     val type: AccountTypeJpa
-)
+) {
+    companion object
+}
 
 enum class AccountTypeJpa {
     CURRENT,

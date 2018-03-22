@@ -5,17 +5,21 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.client.exchange
+import org.springframework.boot.web.client.RestTemplateBuilder
+import org.springframework.context.annotation.Bean
 import org.springframework.http.RequestEntity
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
 import java.net.URI
 
+
 @RunWith(SpringRunner::class)
 @IntegrationTest
-class AccountTest {
+class AccountControllerIntegrationTest {
 
     @Autowired
     private lateinit var rest: TestRestTemplate
@@ -84,6 +88,14 @@ class AccountTest {
             repo.save(letAccount(it).copy(id = 0).toAccountJpa()).toAccount()
         }
 
+    @TestConfiguration
+    class TestConfig {
+        @Bean
+        fun restTemplateBuilder() = RestTemplateBuilder()
+            .setConnectTimeout(1000)
+            .setReadTimeout(1000)!!
+
+    }
 }
 
 @Target(AnnotationTarget.CLASS)
@@ -99,6 +111,16 @@ fun Account.Companion.testInstance() = Account(
     balance = 1337,
     type = AccountType.CURRENT
 )
+
+
+fun AccountJpa.Companion.testInstance() = AccountJpa(
+    id = 43,
+    alias = "testAliaz",
+    balance = 1338,
+    type = AccountTypeJpa.SAVING
+)
+
+fun AccountJpa.Companion.unsavedTestInstance() = testInstance().copy(id = 0)
 
 inline fun <reified T : Any> TestRestTemplate.exchangeGet(url: String): T =
     exchange<T>(RequestEntity.get(URI.create(url)).build()).body!!
