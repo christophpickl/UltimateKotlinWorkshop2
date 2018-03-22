@@ -33,13 +33,17 @@ dependencies {
     compile(kotlin("reflect")) // compile("org.jetbrains.kotlin:kotlin-reflect")
 
     compile("org.springframework.boot:spring-boot-starter")
-    compile("com.fasterxml.jackson.module:jackson-module-kotlin")
     compile("io.github.microutils:kotlin-logging:1.4.9")
-    /*
-    compile("org.springframework.boot:spring-boot-starter-data-jpa")
-    compile("com.h2database:h2")
-     */
 
+    // WEB
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("com.fasterxml.jackson.module:jackson-module-kotlin")
+
+    // DB
+    compile("org.springframework.boot:spring-boot-starter-data-jpa")
+    compile("com.h2database:h2") // :1.4.196
+
+    // TEST
     testCompile("org.springframework.boot:spring-boot-starter-test")
 }
 
