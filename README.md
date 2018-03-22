@@ -1,5 +1,13 @@
 # UltimateKotlinWorkshop2
+
 follow up of UltimateKotlinWorkshop using spring framework 5 and boot 2
+
+# TODO
+
+what does jupiter junit gives us?
+    https://github.com/sdeleuze/spring-boot-kotlin-demo/blob/master/src/test/kotlin/hello/ApplicationTests.kt
+
+
 
 # New in Spring 5
 
