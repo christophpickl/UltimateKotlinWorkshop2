@@ -15,7 +15,6 @@ plugins {
     val versionSpringIoMgmt = "1.0.4.RELEASE"
 
     application
-    // java
     // kotlin("jvm") version versionKotlin
     id("org.jetbrains.kotlin.jvm") version versionKotlin
     id("org.jetbrains.kotlin.plugin.spring") version versionKotlin
@@ -37,11 +36,11 @@ dependencies {
 
     // WEB
     compile("org.springframework.boot:spring-boot-starter-web")
-    compile("com.fasterxml.jackson.module:jackson-module-kotlin")
+    compile("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.4")
 
     // DB
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
-    compile("com.h2database:h2") // :1.4.196
+    compile("com.h2database:h2:1.4.196")
 
     // TEST
     testCompile("org.springframework.boot:spring-boot-starter-test")
