@@ -28,21 +28,26 @@ class AccountTest {
     private val anyAccount = Account(0, "alias", 42)
 
     @Test
-    fun `GET accounts - Then return 200 and empty list`() {
-        val response = rest.exchange<List<Account>>(
-            RequestEntity.get(accountsUri).build())
+    fun `GET accounts - Then return 200`() {
+        val response = rest.exchange<List<Account>>(RequestEntity.get(accountsUri).build())
 
         assertThat(response.statusCodeValue).isEqualTo(200)
-        assertThat(response.body).isEqualTo(emptyList<Account>())
+    }
+
+    @Test
+    fun `GET accounts - Then return empty list`() {
+        val response = rest.exchangeGet<List<Account>>(accountsPath)
+
+        assertThat(response).isEqualTo(emptyList<Account>())
     }
 
     @Test
     fun `GET accounts - Given an existing account Then return that account`() {
         val savedAccount = repo.save(anyAccount.toAccountJpa()).toAccount()
 
-        val response = rest.exchange<List<Account>>(
-            RequestEntity.get(accountsUri).build())
-        assertThat(response.body).containsExactly(savedAccount)
+        val response = rest.exchangeGet<List<Account>>(accountsPath)
+
+        assertThat(response).containsExactly(savedAccount)
     }
 
     @Test
@@ -50,20 +55,18 @@ class AccountTest {
         repo.save(anyAccount.copy(alias = "$anyAlias-not").toAccountJpa()).toAccount()
         val savedAccount = repo.save(anyAccount.copy(alias = anyAlias).toAccountJpa()).toAccount()
 
-        val response = rest.exchange<List<Account>>(
-            RequestEntity.get(URI.create("$accountsPath/?alias=$anyAlias")).build())
+        val response = rest.exchangeGet<List<Account>>("$accountsPath/?alias=$anyAlias")
 
-        assertThat(response.body).containsExactly(savedAccount)
+        assertThat(response).containsExactly(savedAccount)
     }
 
     @Test
     fun `GET account - Given an existing account When GET that account by its ID Then return that account`() {
         val savedAccount = repo.save(anyAccount.toAccountJpa()).toAccount()
 
-        val response = rest.exchange<Account>(
-            RequestEntity.get(URI.create("$accountsPath/${savedAccount.id}")).build())
+        val response = rest.exchangeGet<Account>("$accountsPath/${savedAccount.id}")
 
-        assertThat(response.body).isEqualTo(savedAccount)
+        assertThat(response).isEqualTo(savedAccount)
     }
 
     @Test
@@ -77,3 +80,6 @@ class AccountTest {
     }
 
 }
+
+inline fun <reified T : Any> TestRestTemplate.exchangeGet(url: String): T =
+    exchange<T>(RequestEntity.get(URI.create(url)).build()).body!!
