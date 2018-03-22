@@ -11,8 +11,14 @@ data class AccountJpa(
     @Id @GeneratedValue
     val id: Long,
     val alias: String,
-    val balance: Int
+    val balance: Int,
+    val type: AccountTypeJpa
 )
+
+enum class AccountTypeJpa {
+    CURRENT,
+    SAVING
+}
 
 @Repository
 interface AccountRepository : JpaRepository<AccountJpa, Long> {

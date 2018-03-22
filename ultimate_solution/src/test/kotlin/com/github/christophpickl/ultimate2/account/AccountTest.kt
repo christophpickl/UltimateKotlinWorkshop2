@@ -9,12 +9,12 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.client.exchange
 import org.springframework.http.RequestEntity
 import org.springframework.test.annotation.DirtiesContext
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
 import java.net.URI
 
 @RunWith(SpringRunner::class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@IntegrationTest
 class AccountTest {
 
     @Autowired
@@ -25,7 +25,7 @@ class AccountTest {
     private val accountsPath = "/accounts"
     private val accountsUri = URI.create(accountsPath)
     private val anyAlias = "anyAlias"
-    private val anyAccount = Account(0, "alias", 42)
+    private val anyAccount = Account.testInstance().copy(id = 0)
 
     @Test
     fun `GET accounts - Then return 200`() {
@@ -43,7 +43,7 @@ class AccountTest {
 
     @Test
     fun `GET accounts - Given an existing account Then return that account`() {
-        val savedAccount = repo.save(anyAccount.toAccountJpa()).toAccount()
+        val savedAccount = saveAccount()
 
         val response = rest.exchangeGet<List<Account>>(accountsPath)
 
@@ -52,8 +52,8 @@ class AccountTest {
 
     @Test
     fun `GET accounts by alias - Given an two accounts with different alias Then return only one account`() {
-        repo.save(anyAccount.copy(alias = "$anyAlias-not").toAccountJpa()).toAccount()
-        val savedAccount = repo.save(anyAccount.copy(alias = anyAlias).toAccountJpa()).toAccount()
+        saveAccount { copy(alias = "$anyAlias-not") }
+        val savedAccount = saveAccount { copy(alias = anyAlias) }
 
         val response = rest.exchangeGet<List<Account>>("$accountsPath/?alias=$anyAlias")
 
@@ -62,7 +62,7 @@ class AccountTest {
 
     @Test
     fun `GET account - Given an existing account When GET that account by its ID Then return that account`() {
-        val savedAccount = repo.save(anyAccount.toAccountJpa()).toAccount()
+        val savedAccount = saveAccount()
 
         val response = rest.exchangeGet<Account>("$accountsPath/${savedAccount.id}")
 
@@ -79,7 +79,26 @@ class AccountTest {
         assertThat(repo.findAll()).containsExactly(expectedAccount.toAccountJpa())
     }
 
+    private fun saveAccount(letAccount: Account.() -> Account = { this }): Account =
+        Account.testInstance().let {
+            repo.save(letAccount(it).copy(id = 0).toAccountJpa()).toAccount()
+        }
+
 }
+
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ActiveProfiles("test")
+annotation class IntegrationTest
+
+fun Account.Companion.testInstance() = Account(
+    id = 42,
+    alias = "testAlias",
+    balance = 1337,
+    type = AccountType.CURRENT
+)
 
 inline fun <reified T : Any> TestRestTemplate.exchangeGet(url: String): T =
     exchange<T>(RequestEntity.get(URI.create(url)).build()).body!!

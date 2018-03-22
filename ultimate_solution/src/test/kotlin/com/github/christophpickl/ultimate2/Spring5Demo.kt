@@ -1,6 +1,7 @@
+@file:Suppress("UNUSED_PARAMETER")
+
 package com.github.christophpickl.ultimate2
 
-import org.springframework.context.support.GenericApplicationContext
 import org.springframework.context.support.beans
 
 class Foo

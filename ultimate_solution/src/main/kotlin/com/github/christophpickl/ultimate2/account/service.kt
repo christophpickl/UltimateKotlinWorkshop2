@@ -25,5 +25,15 @@ class AccountService(
 
 }
 
-fun AccountJpa.toAccount() = Account(id, alias, balance)
-fun Account.toAccountJpa() = AccountJpa(id, alias, balance)
+fun AccountJpa.toAccount() = Account(id, alias, balance, type.toAccountType())
+fun Account.toAccountJpa() = AccountJpa(id, alias, balance, type.toAccountTypeJpa())
+
+fun AccountTypeJpa.toAccountType() = when (this) {
+    AccountTypeJpa.CURRENT -> AccountType.CURRENT
+    AccountTypeJpa.SAVING -> AccountType.SAVING
+}
+
+fun AccountType.toAccountTypeJpa() = when (this) {
+    AccountType.CURRENT -> AccountTypeJpa.CURRENT
+    AccountType.SAVING -> AccountTypeJpa.SAVING
+}
