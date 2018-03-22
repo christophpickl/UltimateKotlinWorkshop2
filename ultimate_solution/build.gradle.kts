@@ -31,6 +31,7 @@ dependencies {
 
     compile("org.springframework.boot:spring-boot-starter")
     compile("com.fasterxml.jackson.module:jackson-module-kotlin")
+    compile("io.github.microutils:kotlin-logging:1.4.9")
 
     testCompile("org.springframework.boot:spring-boot-starter-test")
 }
