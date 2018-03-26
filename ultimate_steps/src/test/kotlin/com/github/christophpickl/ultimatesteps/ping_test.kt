@@ -24,4 +24,17 @@ class PingTest {
 
         assertThat(response.body).isEqualTo("pong")
     }
+
+    @Test
+    fun `When GET ping accepting JSON Then JSON payload is returned`() {
+        val response = rest.exchange(
+                RequestEntity.get(URI.create("/ping"))
+                        .header("accept", "application/json")
+                        .build(),
+                String::class.java
+        )
+
+        assertThat(response.body).isEqualTo("""{"message":"pong"}""")
+    }
+
 }
