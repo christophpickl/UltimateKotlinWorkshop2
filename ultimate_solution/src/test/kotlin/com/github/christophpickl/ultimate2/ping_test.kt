@@ -36,7 +36,7 @@ class PingTest {
                 String::class.java
         )
 
-        assertThat(response.body).jsisEqualTo("""{"message":"pong"}""")
+        assertThat(response.body).isEqualTo("""{"message":"pong"}""")
     }
 
 }
