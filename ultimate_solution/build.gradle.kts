@@ -10,7 +10,7 @@ group = "com.github.christophpickl.ultimate2"
 
 plugins {
 
-    val versionKotlin = "1.2.30"
+    val versionKotlin = "1.2.31"
     val versionSpringBoot = "2.0.0.RELEASE"
     val versionSpringIoMgmt = "1.0.4.RELEASE"
 
