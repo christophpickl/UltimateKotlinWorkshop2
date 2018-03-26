@@ -47,3 +47,36 @@ object Spring5Demo {
         context.getBean<Dancer>().dance()
     }
 }
+
+/*
+
+### Kotlin bean definition DSL
+
+The old (Java 8) way:
+
+```java
+GenericApplicationContext context = new GenericApplicationContext();
+context.registerBean(Foo.class);
+context.registerBean(Bar.class, () -> newBar(context.getBean(Foo.class)));
+```
+
+With Kotlin and some syntactic sugar + reified generics:
+```kotlin
+val context = GenericApplicationContext().apply {
+    registerBean<Foo>()
+    registerBean { Bar(it.getBean<Foo>()) }
+}
+```
+
+Now with a DSL:
+```kotlin
+beans {
+    bean<Foo>()
+    bean { Bar(ref()) }
+}
+```
+
+BUT: "Spring Boot is based on Java Config and does not provide specific support for functional bean definition yet, but ..."
+https://stackoverflow.com/questions/45935931/how-to-use-functional-bean-definition-kotlin-dsl-with-spring-boot-and-spring-w/46033685#46033685
+
+ */
