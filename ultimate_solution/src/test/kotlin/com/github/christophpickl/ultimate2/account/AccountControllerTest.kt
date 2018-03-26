@@ -11,6 +11,7 @@ import org.springframework.boot.test.web.client.exchange
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.http.RequestEntity
+import org.springframework.http.ResponseEntity
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
@@ -28,6 +29,7 @@ class AccountControllerTest {
     private val accountsPath = "/accounts"
     private val accountsUri = URI.create(accountsPath)
     private val anyAlias = "anyAlias"
+    private val notExistingId = 42
     private val anyAccount = Account.testInstance().copy(id = 0)
 
     @Test
@@ -41,7 +43,7 @@ class AccountControllerTest {
     fun `GET accounts - Then return empty list`() {
         val response = rest.exchangeGet<List<Account>>(accountsPath)
 
-        assertThat(response).isEqualTo(emptyList<Account>())
+        assertThat(response.body).isEqualTo(emptyList<Account>())
     }
 
     @Test
@@ -50,7 +52,7 @@ class AccountControllerTest {
 
         val response = rest.exchangeGet<List<Account>>(accountsPath)
 
-        assertThat(response).containsExactly(savedAccount)
+        assertThat(response.body).containsExactly(savedAccount)
     }
 
     @Test
@@ -60,7 +62,14 @@ class AccountControllerTest {
 
         val response = rest.exchangeGet<List<Account>>("$accountsPath/?alias=$anyAlias")
 
-        assertThat(response).containsExactly(savedAccount)
+        assertThat(response.body).containsExactly(savedAccount)
+    }
+
+    @Test
+    fun `GET account - When GET non-existing account by its ID Then return 404`() {
+        val response = rest.exchangeGet<Any>("$accountsPath/$notExistingId")
+
+        assertThat(response.statusCodeValue).isEqualTo(404)
     }
 
     @Test
@@ -69,7 +78,7 @@ class AccountControllerTest {
 
         val response = rest.exchangeGet<Account>("$accountsPath/${savedAccount.id}")
 
-        assertThat(response).isEqualTo(savedAccount)
+        assertThat(response.body).isEqualTo(savedAccount)
     }
 
     @Test
@@ -87,8 +96,8 @@ class AccountControllerTest {
             repo.save(letAccount(it).copy(id = 0).toAccountJpa()).toAccount()
         }
 
-    private inline fun <reified T : Any> TestRestTemplate.exchangeGet(url: String): T =
-        exchange<T>(RequestEntity.get(URI.create(url)).build()).body!!
+    private inline fun <reified T : Any> TestRestTemplate.exchangeGet(url: String): ResponseEntity<T> =
+            exchange<T>(RequestEntity.get(URI.create(url)).build())
 
     @TestConfiguration
     class TestConfig {
@@ -100,9 +109,9 @@ class AccountControllerTest {
     }
 }
 
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@Target(AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.RUNTIME)
 annotation class IntegrationTest

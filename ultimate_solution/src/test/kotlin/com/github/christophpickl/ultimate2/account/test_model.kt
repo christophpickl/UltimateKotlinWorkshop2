@@ -1,6 +1,5 @@
 package com.github.christophpickl.ultimate2.account
 
-
 fun Account.Companion.testInstance() = Account(
     id = 42,
     alias = "testAlias",
