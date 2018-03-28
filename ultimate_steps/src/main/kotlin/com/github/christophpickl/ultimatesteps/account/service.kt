@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service
 @Service
 class AccountService {
 
-    val accountsById = mutableMapOf<Int, Account>()
+    val accountsById = mutableMapOf<Long, Account>()
 
     fun getAccounts(): List<Account> = accountsById.values.toList()
 

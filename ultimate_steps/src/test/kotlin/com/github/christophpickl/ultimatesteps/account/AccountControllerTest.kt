@@ -1,6 +1,5 @@
-package com.github.christophpickl.ultimatesteps
+package com.github.christophpickl.ultimatesteps.account
 
-import com.github.christophpickl.ultimatesteps.account.Account
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,9 +18,12 @@ class AccountControllerTest {
 
     @Autowired
     private lateinit var rest: TestRestTemplate
+    @Autowired
+    private lateinit var service: AccountService
 
     private val accountsPath = "/accounts"
     private val accountsUri = URI.create(accountsPath)
+    private val anyId = 42L
 
     @Test
     fun `GET accounts - Then return 200`() {
@@ -36,6 +38,23 @@ class AccountControllerTest {
 
         assertThat(response.body).isEqualTo(emptyList<Account>())
     }
+
+    @Test
+    fun `GET accounts - Given an existing account Then return that account`() {
+        val savedAccount = saveAccount { copy(id = anyId )}
+
+        val response = rest.exchangeGet<List<Account>>(accountsPath)
+
+        assertThat(response.body).containsExactly(savedAccount)
+    }
+
+
+    private fun saveAccount(letAccount: Account.() -> Account = { this }): Account =
+            Account.testInstance().let {
+                val accountToSave = letAccount(it)
+                service.accountsById[accountToSave.id] = accountToSave
+                accountToSave
+            }
 
     private inline fun <reified T : Any> TestRestTemplate.exchangeGet(url: String): ResponseEntity<T> =
             exchange(RequestEntity.get(URI.create(url)).build())
