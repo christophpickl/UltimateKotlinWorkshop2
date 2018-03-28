@@ -1,7 +1,6 @@
 package com.github.christophpickl.ultimatesteps.account
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -10,17 +9,19 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.client.exchange
 import org.springframework.http.RequestEntity
 import org.springframework.http.ResponseEntity
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit4.SpringRunner
 import java.net.URI
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class AccountControllerTest {
 
     @Autowired
     private lateinit var rest: TestRestTemplate
     @Autowired
-    private lateinit var service: AccountService
+    private lateinit var repo: AccountRepository
 
     private val anyAccount = Account.testInstance()
     private val accountsPath = "/accounts"
@@ -78,19 +79,13 @@ class AccountControllerTest {
     }
 
     private fun savedAccountsContainsExactly(account: Account) {
-        assertThat(service.accountsById.values).containsExactly(account)
-    }
-
-    @Before
-    fun `reset database`() {
-        service.accountsById.clear()
+        assertThat(repo.findAll()).containsExactly(account.toAccountJpa())
     }
 
     private fun saveAccount(letAccount: Account.() -> Account = { this }): Account =
             anyAccount.let {
                 val accountToSave = letAccount(it)
-                service.accountsById[accountToSave.id] = accountToSave
-                accountToSave
+                repo.save(accountToSave.toAccountJpa()).toAccount()
             }
 
     private inline fun <reified T : Any> TestRestTemplate.exchangeGet(url: String): ResponseEntity<T> =
