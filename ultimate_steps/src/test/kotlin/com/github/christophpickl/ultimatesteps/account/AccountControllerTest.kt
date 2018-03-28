@@ -22,6 +22,7 @@ class AccountControllerTest {
     @Autowired
     private lateinit var service: AccountService
 
+    private val anyAccount = Account.testInstance()
     private val accountsPath = "/accounts"
     private val accountsUri = URI.create(accountsPath)
     private val anyId = 42L
@@ -43,7 +44,7 @@ class AccountControllerTest {
 
     @Test
     fun `GET accounts - Given an existing account Then return that account`() {
-        val savedAccount = saveAccount { copy(id = anyId )}
+        val savedAccount = saveAccount { copy(id = anyId) }
 
         val response = rest.exchangeGet<List<Account>>(accountsPath)
 
@@ -66,13 +67,27 @@ class AccountControllerTest {
         assertThat(response.body).isEqualTo(savedAccount)
     }
 
+    @Test
+    fun `POST account - Then return that account with new ID and persist it in the database`() {
+        val response = rest.exchange<Account>(
+                RequestEntity.post(accountsUri).body(anyAccount))
+
+        val expectedAccount = anyAccount.copy(id = response.body!!.id)
+        assertThat(response.body).isEqualTo(expectedAccount)
+        savedAccountsContainsExactly(expectedAccount)
+    }
+
+    private fun savedAccountsContainsExactly(account: Account) {
+        assertThat(service.accountsById.values).containsExactly(account)
+    }
+
     @Before
     fun `reset database`() {
         service.accountsById.clear()
     }
 
     private fun saveAccount(letAccount: Account.() -> Account = { this }): Account =
-            Account.testInstance().let {
+            anyAccount.let {
                 val accountToSave = letAccount(it)
                 service.accountsById[accountToSave.id] = accountToSave
                 accountToSave

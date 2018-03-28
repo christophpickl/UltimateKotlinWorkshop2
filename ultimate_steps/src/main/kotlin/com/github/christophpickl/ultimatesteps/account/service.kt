@@ -9,5 +9,6 @@ class AccountService {
 
     fun getAccounts(): List<Account> = accountsById.values.toList()
     fun getAccount(id: Long): Account? = accountsById[id]
+    fun createAccount(account: Account): Account = account.also { accountsById[it.id] = it }
 
 }
