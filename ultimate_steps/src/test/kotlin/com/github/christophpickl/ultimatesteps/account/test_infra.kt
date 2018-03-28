@@ -8,3 +8,12 @@ fun Account.Companion.testInstance() = Account(
         balance = 1337,
         type = CURRENT
 )
+
+fun AccountJpa.Companion.testInstance() = AccountJpa(
+        id = 43,
+        alias = "testAliaz",
+        balance = 1338,
+        type = AccountTypeJpa.SAVING
+)
+
+fun AccountJpa.Companion.unsavedTestInstance() = testInstance().copy(id = 0)
