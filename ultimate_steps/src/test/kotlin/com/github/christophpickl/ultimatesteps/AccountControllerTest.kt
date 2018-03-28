@@ -38,6 +38,6 @@ class AccountControllerTest {
     }
 
     private inline fun <reified T : Any> TestRestTemplate.exchangeGet(url: String): ResponseEntity<T> =
-            exchange<T>(RequestEntity.get(URI.create(url)).build())
+            exchange(RequestEntity.get(URI.create(url)).build())
 
 }
