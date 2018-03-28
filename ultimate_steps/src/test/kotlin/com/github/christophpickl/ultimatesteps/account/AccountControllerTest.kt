@@ -1,6 +1,7 @@
 package com.github.christophpickl.ultimatesteps.account
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,6 +25,7 @@ class AccountControllerTest {
     private val accountsPath = "/accounts"
     private val accountsUri = URI.create(accountsPath)
     private val anyId = 42L
+    private val notExistingId = 43L
 
     @Test
     fun `GET accounts - Then return 200`() {
@@ -48,6 +50,26 @@ class AccountControllerTest {
         assertThat(response.body).containsExactly(savedAccount)
     }
 
+    @Test
+    fun `GET account - When GET non-existing account by its ID Then return 404`() {
+        val response = rest.exchangeGet<Any>("$accountsPath/$notExistingId")
+
+        assertThat(response.statusCodeValue).isEqualTo(404)
+    }
+
+    @Test
+    fun `GET account - Given an existing account When GET that account by its ID Then return that account`() {
+        val savedAccount = saveAccount()
+
+        val response = rest.exchangeGet<Account>("$accountsPath/${savedAccount.id}")
+
+        assertThat(response.body).isEqualTo(savedAccount)
+    }
+
+    @Before
+    fun `reset database`() {
+        service.accountsById.clear()
+    }
 
     private fun saveAccount(letAccount: Account.() -> Account = { this }): Account =
             Account.testInstance().let {
