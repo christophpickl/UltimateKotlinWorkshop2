@@ -5,6 +5,8 @@ but using the latest Spring Framework 5 and Spring Boot 2 versions.
 
 Have a look at my personal [presentation_notes.pdf](https://github.com/christophpickl/UltimateKotlinWorkshop2/blob/master/presentation_notes.pdf) which will walk you through the whole workshop and get your very own Spring Boot enabled ReSTful webservice up and running :)
 
+For pre-solved solutions, open up the [ultimate_solution/](https://github.com/christophpickl/UltimateKotlinWorkshop2/tree/master/ultimate_solution) folder which contains the full fledged solution. Or if you prefer something more slim, have a look into the [ultimate_steps/](https://github.com/christophpickl/UltimateKotlinWorkshop2/tree/master/ultimate_steps) directory.
+
 Happy koding, yours
 
 Christoph :heart:
@@ -62,3 +64,29 @@ ATTENTION: "If you are using bean validation on classes with primary constructor
 * Domain specific argument resolvers
 * Domain specific exception handlers
 * Logging with Spring-AOP
+
+
+### Web Functional API with Kotlin
+
+```kotlin
+{
+    ("/movie" and accept(TEXT_HTML)).nest {
+        GET("/", movieHandler::findAllView)
+        GET("/{card}", movieHandler::findOneView)
+    }
+    ("/api/movie" and accept(APPLICATION_JSON)).nest {
+        GET("/", movieApiHandler::findAll)
+        GET("/{id}", movieApiHandler::findOne)
+    }
+}
+```
+
+### Function Bean Registration
+
+```kotlin
+val context = GenericApplicationContext {
+registerBean()
+registerBean { Cinema(it.getBean()) }
+
+}
+```
