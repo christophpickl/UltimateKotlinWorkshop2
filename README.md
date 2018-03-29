@@ -3,23 +3,15 @@
 Follow up of the original [Ultimate Kotlin Workshop](https://github.com/christophpickl/UltimateKotlinWorkshop/) 
 but using the latest Spring Framework 5 and Spring Boot 2 versions.
 
-## Further reading
+Have a look at my personal [presentation_notes.pdf](https://github.com/christophpickl/UltimateKotlinWorkshop2/blob/master/presentation_notes.pdf) which will walk you through the whole workshop and get your very own Spring Boot enabled ReSTful webservice up and running :)
 
-* https://docs.spring.io/spring/docs/5.0.4.RELEASE/spring-framework-reference/languages.html#languages
-* https://docs.spring.io/spring-framework/docs/5.0.4.RELEASE/kdoc-api/spring-framework/
-* https://spring.io/blog/2017/08/01/spring-framework-5-kotlin-apis-the-functional-way
-* https://spring.io/blog/2017/01/04/introducing-kotlin-support-in-spring-framework-5-0
-* https://dzone.com/articles/whats-new-in-spring-framework-5
+Happy koding, yours
 
-## Moar topics
+Christoph :heart:
 
-* Processing query parameters
-* Processing header parameters
-* Domain specific argument resolvers
-* Domain specific exception handlers
-* Logging with Spring-AOP
+# Appendix
 
-## News
+## Spring News
 
 ### General
 
@@ -54,3 +46,19 @@ ATTENTION: "If you are using bean validation on classes with primary constructor
 * Still the final VS open hack via kotlin-spring / kotlin-allopen
 * Still the 0-ctor hack for JPA via kotlin-jpa / kotlin-noarg
 * Still need lateinit for e.g. injected properties (no `by spring()` feature yet)
+
+## Further reading
+
+* https://docs.spring.io/spring/docs/5.0.4.RELEASE/spring-framework-reference/languages.html#languages
+* https://docs.spring.io/spring-framework/docs/5.0.4.RELEASE/kdoc-api/spring-framework/
+* https://spring.io/blog/2017/08/01/spring-framework-5-kotlin-apis-the-functional-way
+* https://spring.io/blog/2017/01/04/introducing-kotlin-support-in-spring-framework-5-0
+* https://dzone.com/articles/whats-new-in-spring-framework-5
+
+## Moar (uncovered) topics
+
+* Processing query parameters
+* Processing header parameters
+* Domain specific argument resolvers
+* Domain specific exception handlers
+* Logging with Spring-AOP
